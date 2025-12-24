@@ -1,14 +1,17 @@
 // ABOUTME: Label generation utilities for memory blocks
 // ABOUTME: Implements naming convention for per-user Discord memory blocks
 
-const LABEL_PREFIX = '/';
-const DISCORD_SEGMENT = '/discord/users/';
+const LABEL_PREFIX = "/";
+const DISCORD_SEGMENT = "/discord/users/";
 
 /**
  * Generate a block label for a Discord user
  * Format: /{agent_id}/discord/users/{user_id}
  */
-export function generateUserBlockLabel(agentId: string, userId: string): string {
+export function generateUserBlockLabel(
+  agentId: string,
+  userId: string,
+): string {
   return `${LABEL_PREFIX}${agentId}${DISCORD_SEGMENT}${userId}`;
 }
 
@@ -17,7 +20,7 @@ export function generateUserBlockLabel(agentId: string, userId: string): string 
  * Returns null if the label format is invalid
  */
 export function parseUserBlockLabel(
-  label: string
+  label: string,
 ): { agentId: string; userId: string } | null {
   if (!label || !label.startsWith(LABEL_PREFIX)) {
     return null;

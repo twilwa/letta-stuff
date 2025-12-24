@@ -1,7 +1,7 @@
 // ABOUTME: Discord client creation and configuration
 // ABOUTME: Sets up client with required intents for Stage channels and voice
 
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 
 export function createClient(): Client {
   const client = new Client({

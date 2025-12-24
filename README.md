@@ -5,6 +5,7 @@ A Discord Stage Channel AI bot with long-term memory via Letta, voice conversati
 ## Features (In Development)
 
 ### Implemented (Wave 1 - Foundation)
+
 - ✅ **Project Setup**: TypeScript, Vitest, modular directory structure
 - ✅ **Configuration**: Environment variable loading with validation
 - ✅ **Discord Client**: Proper gateway intents for Stage channels and voice
@@ -13,11 +14,13 @@ A Discord Stage Channel AI bot with long-term memory via Letta, voice conversati
 - ✅ **Stage Channel Utilities**: Detection and permission checking
 
 ### In Progress
+
 - 🚧 **Stage Instance Management**: Creation, termination, speaker state
 - 🚧 **Slash Commands**: /join, /leave, /stage-start, /stage-stop, /promote
 - 🚧 **Voice Connection**: @discordjs/voice lifecycle management
 
 ### Planned (Wave 2+)
+
 - ⏳ **Memory System**: Letta SDK integration with per-user memory blocks
 - ⏳ **Voice Input**: Audio capture, STT (Deepgram), speaker tracking
 - ⏳ **Voice Output**: TTS, audio queue, barge-in support
@@ -85,6 +88,7 @@ This project follows Test-Driven Development (TDD):
 3. Refactor while keeping tests green (REFACTOR)
 
 Current test coverage:
+
 - ✅ Configuration validation
 - ✅ Discord client creation and intents
 - ✅ Stage Channel detection and permissions
@@ -117,6 +121,7 @@ See `openspec/project.md` for full architecture details.
 ### Core Patterns
 
 **Per-User Memory Blocks** (Planned):
+
 ```typescript
 const blockIds = await attachUserBlocks(senderId, messageContent);
 try {
@@ -127,11 +132,13 @@ try {
 ```
 
 **Audio Pipeline** (Planned):
+
 ```
 Discord (48kHz stereo Opus) → Decode → Resample (16kHz mono) → Wake Word/STT
 ```
 
 **Relevance-Threshold Speaking** (Planned):
+
 ```typescript
 function shouldSpeak(context, transcription): boolean {
   if (containsWakeWord(transcription)) return true;
@@ -162,6 +169,7 @@ bd stats
 ## Contributing
 
 This project uses:
+
 - **Trunk Check** for linting and formatting
 - **Vitest** for testing
 - **TypeScript** strict mode

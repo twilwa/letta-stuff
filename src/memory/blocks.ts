@@ -1,7 +1,7 @@
 // ABOUTME: Memory block management for per-user Discord blocks
 // ABOUTME: Handles block creation, attachment, and detachment with Letta API
 
-import { generateUserBlockLabel } from './labels';
+import { generateUserBlockLabel } from "./labels";
 
 export const DEFAULT_USER_BLOCK_TEMPLATE = `Discord User Memory Block
 User ID: {userId}
@@ -21,12 +21,13 @@ export interface BlockTemplate {
  */
 export function createUserBlockTemplate(
   agentId: string,
-  userId: string
+  userId: string,
 ): BlockTemplate {
   const label = generateUserBlockLabel(agentId, userId);
-  const value = DEFAULT_USER_BLOCK_TEMPLATE
-    .replace('{userId}', userId)
-    .replace('{date}', new Date().toISOString());
+  const value = DEFAULT_USER_BLOCK_TEMPLATE.replace("{userId}", userId).replace(
+    "{date}",
+    new Date().toISOString(),
+  );
 
   return {
     label,
@@ -41,7 +42,7 @@ export function createUserBlockTemplate(
 export async function attachBlockToAgent(
   client: any,
   agentId: string,
-  blockId: string
+  blockId: string,
 ): Promise<boolean> {
   try {
     await client.agents.blocks.attach(agentId, { blockId });
@@ -61,7 +62,7 @@ export async function attachBlockToAgent(
 export async function detachBlockFromAgent(
   client: any,
   agentId: string,
-  blockId: string
+  blockId: string,
 ): Promise<boolean> {
   try {
     await client.agents.blocks.detach(agentId, blockId);
@@ -81,7 +82,7 @@ export async function detachBlockFromAgent(
 export async function getOrCreateUserBlock(
   client: any,
   agentId: string,
-  userId: string
+  userId: string,
 ): Promise<{ id: string; isNew: boolean }> {
   const label = generateUserBlockLabel(agentId, userId);
 

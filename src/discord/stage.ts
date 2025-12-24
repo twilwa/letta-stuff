@@ -1,7 +1,12 @@
 // ABOUTME: Stage Channel management utilities
 // ABOUTME: Detection, permission checking, Instance creation/termination, speaker management
 
-import { ChannelType, GuildMember, PermissionFlagsBits, StageChannel } from 'discord.js';
+import {
+  ChannelType,
+  GuildMember,
+  PermissionFlagsBits,
+  StageChannel,
+} from "discord.js";
 
 /**
  * Check if a channel is a Stage channel (type 13)

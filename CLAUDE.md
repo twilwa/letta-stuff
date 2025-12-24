@@ -1,14 +1,17 @@
 <!-- OPENSPEC:START -->
+
 # OpenSpec Instructions
 
 These instructions are for AI assistants working in this project.
 
 Always open `@/openspec/AGENTS.md` when the request:
+
 - Mentions planning or proposals (words like proposal, spec, change, plan)
 - Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
 - Sounds ambiguous and you need the authoritative spec before coding
 
 Use `@/openspec/AGENTS.md` to learn:
+
 - How to create and apply change proposals
 - Spec format and conventions
 - Project structure and guidelines
@@ -22,6 +25,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 ## Project Overview
 
 Building a Discord Stage Channel AI bot with:
+
 - Voice conversation capabilities (listen + speak)
 - Long-term memory via Letta
 - Wake word detection (Picovoice Porcupine)
@@ -69,11 +73,13 @@ trunk fmt
 ## Environment Variables
 
 Copy from `.env.template`. Required:
+
 - `DISCORD_TOKEN`, `APP_ID`, `PUBLIC_KEY` - Discord Bot
 - `LETTA_AGENT_ID` - Your Letta agent
 - `LETTA_BASE_URL` - Default `http://localhost:8283`
 
 Future (as features are added):
+
 - `DEEPGRAM_API_KEY` - STT
 - `PICOVOICE_ACCESS_KEY` - Wake word
 - `CARTESIA_API_KEY` or `ELEVENLABS_API_KEY` - TTS
@@ -95,32 +101,35 @@ bd stats           # Project health
 
 ### Wave 1 (Foundation - Parallelizable)
 
-| Proposal | Tasks | Focus | Parallel? |
-|----------|-------|-------|-----------|
-| `add-discord-core` | 31 | Discord client, Stage, slash commands | ✅ |
-| `add-memory-system` | 35 | Letta SDK, per-user memory blocks | ✅ |
-| `add-voice-connection` | 25 | @discordjs/voice lifecycle | ✅ |
-| `add-audio-output` | 34 | Player, queue, barge-in | ✅ (with connection) |
+| Proposal               | Tasks | Focus                                 | Parallel?            |
+| ---------------------- | ----- | ------------------------------------- | -------------------- |
+| `add-discord-core`     | 31    | Discord client, Stage, slash commands | ✅                   |
+| `add-memory-system`    | 35    | Letta SDK, per-user memory blocks     | ✅                   |
+| `add-voice-connection` | 25    | @discordjs/voice lifecycle            | ✅                   |
+| `add-audio-output`     | 34    | Player, queue, barge-in               | ✅ (with connection) |
 
 ### Wave 1b (Voice Modules - After Connection)
 
-| Proposal | Tasks | Focus | Depends On |
-|----------|-------|-------|------------|
-| `add-audio-input` | 31 | Per-user streams, speaker tracking | voice-connection |
-| `add-audio-transform` | 37 | Opus→PCM, 48kHz→16kHz resample | audio-input (or fixtures) |
+| Proposal              | Tasks | Focus                              | Depends On                |
+| --------------------- | ----- | ---------------------------------- | ------------------------- |
+| `add-audio-input`     | 31    | Per-user streams, speaker tracking | voice-connection          |
+| `add-audio-transform` | 37    | Opus→PCM, 48kHz→16kHz resample     | audio-input (or fixtures) |
 
 ### Wave 2 (Depends on Wave 1)
+
 - **Wake Word Detection** - Porcupine integration (needs audio-transform)
 - **Voice Processing** - STT → Turn Detection → TTS (needs audio-transform)
 - **Stage Features** - Stage Instance management (needs discord-core)
 
 ### Wave 3 (Integration)
+
 - **Voice Orchestration** - Relevance thresholds, turn-taking
 - **MCP Integration** - Tool servers, LangChain adapters
 
 ## Key Patterns
 
 ### Per-User Memory Blocks
+
 ```typescript
 // Attach user blocks before processing
 const blockIds = await attachUserBlocks(senderId, messageContent);
@@ -132,11 +141,13 @@ try {
 ```
 
 ### Audio Resampling (for voice features)
+
 ```
 Discord (48kHz stereo Opus) → Decode → Resample (16kHz mono) → Wake Word/STT
 ```
 
 ### Relevance-Threshold Speaking
+
 ```typescript
 function shouldSpeak(context, transcription): boolean {
   if (containsWakeWord(transcription)) return true;

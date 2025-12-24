@@ -1,7 +1,7 @@
 // ABOUTME: Letta client wrapper with configuration
 // ABOUTME: Provides factory function and singleton for Letta API access
 
-import { Letta } from '@letta-ai/letta-client';
+import { Letta } from "@letta-ai/letta-client";
 
 export interface LettaClientConfig {
   baseUrl?: string;
@@ -14,13 +14,15 @@ export interface LettaClientWrapper {
   client: Letta;
 }
 
-const DEFAULT_BASE_URL = 'http://localhost:8283';
+const DEFAULT_BASE_URL = "http://localhost:8283";
 
 /**
  * Create a new Letta client with the given configuration
  * Use this for testing or when you need multiple clients
  */
-export function createLettaClient(config: LettaClientConfig): LettaClientWrapper {
+export function createLettaClient(
+  config: LettaClientConfig,
+): LettaClientWrapper {
   const baseUrl = config.baseUrl || DEFAULT_BASE_URL;
 
   const client = new Letta({

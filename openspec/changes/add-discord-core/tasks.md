@@ -2,7 +2,7 @@
 
 - [ ] 1.1 Initialize npm project with TypeScript configuration
 - [ ] 1.2 Install core dependencies: discord.js, @discordjs/voice, dotenv
-- [ ] 1.3 Install dev dependencies: typescript, ts-node-dev, @types/*, vitest
+- [ ] 1.3 Install dev dependencies: typescript, ts-node-dev, @types/\*, vitest
 - [ ] 1.4 Configure tsconfig.json (ES2020, strict mode, CommonJS)
 - [ ] 1.5 Set up trunk check for linting and formatting
 - [ ] 1.6 Create modular directory structure (config/, discord/, commands/, text/, voice/)

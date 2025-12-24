@@ -11,16 +11,19 @@ This workstream follows Test-Driven Development: RED (failing test) → GREEN (m
 ### ✅ Section 1: Project Setup (Tasks 1.1-1.6)
 
 **1.1 Initialize npm project with TypeScript configuration**
+
 - Created `package.json` with proper scripts (dev, build, test, start)
 - Configured for CommonJS modules
 - Added metadata and repository info
 
 **1.2 Install core dependencies**
+
 - `discord.js@^14.17.3` - Discord API library
 - `@discordjs/voice@^0.17.0` - Voice connection support
 - `dotenv@^16.4.7` - Environment variable management
 
 **1.3 Install dev dependencies**
+
 - `typescript@^5.7.2` - TypeScript compiler
 - `ts-node-dev@^2.0.0` - Development auto-reload
 - `vitest@^2.1.8` - Testing framework
@@ -28,6 +31,7 @@ This workstream follows Test-Driven Development: RED (failing test) → GREEN (m
 - `@types/node@^22.10.5` - Node.js type definitions
 
 **1.4 Configure tsconfig.json**
+
 - Target: ES2020
 - Module: CommonJS
 - Strict mode: enabled
@@ -35,10 +39,12 @@ This workstream follows Test-Driven Development: RED (failing test) → GREEN (m
 - Source maps and declarations enabled
 
 **1.5 Set up trunk check**
+
 - Already configured in project (`.trunk/` directory present)
 - Integrates with linting and formatting
 
 **1.6 Create modular directory structure**
+
 ```
 src/
 ├── config/           ✅ Created
@@ -58,22 +64,26 @@ tests/
 ### ✅ Section 2: Configuration (Tasks 2.1-2.3)
 
 **2.1 Create .env.template**
+
 - ✅ Template with all required Discord variables
 - ✅ Optional Letta and voice service variables documented
 - ✅ Helpful comments for each section
 
 **2.2 Implement config loader with validation**
+
 - ✅ `src/config/index.ts` - Fail-fast validation
 - ✅ Throws errors for missing required vars (DISCORD_TOKEN, APP_ID, PUBLIC_KEY)
 - ✅ Default values for optional vars (LETTA_BASE_URL)
 - ✅ Type-safe config object structure
 
 **2.3 Add config types**
+
 - ✅ `BotConfig` interface with nested structure
 - ✅ Separate `discord` and `letta` config sections
 - ✅ Optional types for non-required fields
 
 **Tests (7 passing)**:
+
 ```
 ✅ Should throw error when DISCORD_TOKEN is missing
 ✅ Should throw error when APP_ID is missing
@@ -89,26 +99,31 @@ tests/
 ### ✅ Section 3: Discord Client (Tasks 3.1-3.4)
 
 **3.1 Create Discord client with required gateway intents**
+
 - ✅ `src/discord/client.ts` - Client factory function
 - ✅ Intents: Guilds, GuildMessages, MessageContent, DirectMessages, GuildVoiceStates
 - ✅ Partials: Channel (for DM support)
 
 **3.2 Implement client ready handler with logging**
+
 - ✅ `src/index.ts` - Main entry point
 - ✅ Ready event with bot tag logging
 - ✅ Startup progress indicators
 
 **3.3 Implement error handling**
+
 - ✅ Process-level: `unhandledRejection`, `uncaughtException`
 - ✅ Discord client error handler
 - ✅ Login error handling with exit
 
 **3.4 Add graceful shutdown handling**
+
 - ✅ SIGINT and SIGTERM handlers
 - ✅ Client cleanup before exit
 - ✅ Error handling during shutdown
 
 **Tests (2 passing)**:
+
 ```
 ✅ Should create client with required gateway intents
 ✅ Should not login automatically
@@ -119,12 +134,15 @@ tests/
 ### ✅ Section 4: Stage Channel Management (Tasks 4.1, 4.6 - Partial)
 
 **4.1 Implement Stage Channel detection**
+
 - ✅ `isStageChannel()` function - Type guard for ChannelType.GuildStageVoice
 
 **4.6 Add permission checking utilities**
+
 - ✅ `hasStagePermissions()` - Checks MUTE_MEMBERS and MANAGE_CHANNELS
 
 **Tests (4 passing)**:
+
 ```
 ✅ Should return true for Stage channels (type 13)
 ✅ Should return false for non-Stage channels
@@ -152,12 +170,14 @@ tests/
 ## Remaining Tasks
 
 ### 🚧 Section 4: Stage Channel Management (Partial)
+
 - [ ] 4.2 Implement Stage Instance creation (topic, privacy level)
 - [ ] 4.3 Implement Stage Instance termination
 - [ ] 4.4 Implement speaker state management (suppress/unsuppress)
 - [ ] 4.5 Implement hand-raise detection (voiceStateUpdate event)
 
 ### 🚧 Section 5: Slash Commands Framework
+
 - [ ] 5.1 Create command registration system with deploy script
 - [ ] 5.2 Implement command handler with routing
 - [ ] 5.3 Implement /join command (join voice/Stage channel)
@@ -167,6 +187,7 @@ tests/
 - [ ] 5.7 Implement /promote command (unsuppress user)
 
 ### 🚧 Section 6: Testing
+
 - [ ] 6.2 Write unit tests for Stage channel utilities (remaining)
 - [ ] 6.3 Create test fixtures and mocks for Discord.js types
 - [ ] 6.4 Document manual testing procedure
@@ -176,6 +197,7 @@ tests/
 ## Files Created
 
 ### Source Code
+
 ```
 src/
 ├── config/
@@ -187,6 +209,7 @@ src/
 ```
 
 ### Tests
+
 ```
 tests/unit/
 ├── config.test.ts            (103 lines - 7 tests)
@@ -195,6 +218,7 @@ tests/unit/
 ```
 
 ### Configuration
+
 ```
 ├── package.json              (Updated with scripts & deps)
 ├── tsconfig.json             (TypeScript config)
@@ -231,17 +255,20 @@ To continue this workstream, the next implementer should:
 ## Technical Notes
 
 ### TDD Workflow Demonstrated
+
 - All features implemented test-first (RED-GREEN-REFACTOR)
 - Each test suite runs in isolation with proper setup/teardown
 - Tests use dynamic imports with `vi.resetModules()` for clean state
 
 ### Code Quality
+
 - Full TypeScript strict mode compliance
 - Comprehensive JSDoc comments
 - ABOUTME headers on all files
 - Clean separation of concerns
 
 ### Architecture Decisions
+
 - Config loaded synchronously at startup (fail-fast)
 - Client creation separated from login (testability)
 - Stage utilities pure functions (easy to test)

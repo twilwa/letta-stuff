@@ -36,11 +36,13 @@ src/voice/
 ## Resampling Strategy
 
 **Primary: FFmpeg** (already required by @discordjs/voice ecosystem)
+
 ```bash
 ffmpeg -f s16le -ar 48000 -ac 2 -i pipe:0 -ar 16000 -ac 1 -f s16le pipe:1
 ```
 
 **Fallback: speex-resampler** (WASM, no binary deps)
+
 ```typescript
 const resampler = new SpeexResampler(1, 48000, 16000, 7);
 const output = resampler.processChunk(monoInput);

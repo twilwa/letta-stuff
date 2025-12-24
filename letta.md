@@ -33,6 +33,7 @@ Successfully set up a local Letta server in `/Users/anon/Projects/letta-stuff/le
 ## Configuration
 
 The server requires these environment variables to connect to PostgreSQL:
+
 - `LETTA_PG_DB=letta`
 - `LETTA_PG_USER=letta`
 - `LETTA_PG_PASSWORD=letta`
@@ -44,6 +45,7 @@ The server requires these environment variables to connect to PostgreSQL:
 1. **OPENAI_API_KEY Required**: The server is running but you need to set `OPENAI_API_KEY` environment variable to use OpenAI models. Set this before creating agents.
 
 2. **Server Command**: To start the server again in the future:
+
    ```bash
    cd /Users/anon/Projects/letta-stuff/letta
    LETTA_PG_DB=letta LETTA_PG_USER=letta LETTA_PG_PASSWORD=letta \
@@ -51,7 +53,7 @@ The server requires these environment variables to connect to PostgreSQL:
    uv run letta server
    ```
 
-3. **Database Management**: 
+3. **Database Management**:
    - Start database: `cd /Users/anon/Projects/letta-stuff/letta && docker compose up letta_db -d`
    - Stop database: `cd /Users/anon/Projects/letta-stuff/letta && docker compose down`
 
@@ -62,6 +64,7 @@ The server requires these environment variables to connect to PostgreSQL:
 ## Verification
 
 The server is responding correctly:
+
 - Web interface: `http://localhost:8283/` (returns HTML)
 - API ready for Letta Desktop connections
 

@@ -1,7 +1,7 @@
 // ABOUTME: Configuration loader for Discord Stage AI bot
 // ABOUTME: Validates and loads environment variables with fail-fast behavior
 
-import 'dotenv/config';
+import "dotenv/config";
 
 export interface BotConfig {
   discord: {
@@ -23,17 +23,17 @@ export function loadConfig(): BotConfig {
 
   // Validate required Discord variables
   if (!discordToken) {
-    throw new Error('Missing required environment variable: DISCORD_TOKEN');
+    throw new Error("Missing required environment variable: DISCORD_TOKEN");
   }
   if (!appId) {
-    throw new Error('Missing required environment variable: APP_ID');
+    throw new Error("Missing required environment variable: APP_ID");
   }
   if (!publicKey) {
-    throw new Error('Missing required environment variable: PUBLIC_KEY');
+    throw new Error("Missing required environment variable: PUBLIC_KEY");
   }
 
   // Optional Letta variables with defaults
-  const lettaBaseUrl = process.env.LETTA_BASE_URL || 'http://localhost:8283';
+  const lettaBaseUrl = process.env.LETTA_BASE_URL || "http://localhost:8283";
   const lettaAgentId = process.env.LETTA_AGENT_ID;
 
   return {
