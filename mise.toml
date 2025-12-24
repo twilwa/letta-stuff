@@ -1,0 +1,48 @@
+# ABOUTME: mise en place configuration for Discord Stage AI Bot
+# ABOUTME: Defines development tools, tasks, and environment settings
+
+[tools]
+node = "22"
+
+[env]
+NODE_ENV = "development"
+
+[tasks.dev]
+description = "Run in development mode with auto-reload"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build TypeScript to JavaScript"
+run = "npm run build"
+
+[tasks.test]
+description = "Run test suite"
+run = "npm test"
+
+[tasks.test-watch]
+description = "Run tests in watch mode"
+run = "npm run test:watch"
+
+[tasks.test-condensed]
+description = "Run tests with condensed output (failures only)"
+run = "npm test -- --reporter=dot 2>&1 | head -100"
+
+[tasks.test-coverage]
+description = "Run tests with coverage"
+run = "npm run test:coverage"
+
+[tasks.lint]
+description = "Run linters with autofix"
+run = "trunk check --fix"
+
+[tasks.fmt]
+description = "Format code"
+run = "trunk fmt"
+
+[tasks.check]
+description = "Run all checks (lint + test)"
+depends = ["lint", "test"]
+
+[tasks.deploy-commands]
+description = "Deploy Discord slash commands"
+run = "npx ts-node src/commands/deploy.ts"
