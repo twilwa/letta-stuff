@@ -11,9 +11,11 @@ Implemented the complete Audio Output module for the Discord Stage AI Bot follow
 ## Components Implemented
 
 ### 1. AudioQueue (`src/voice/output/queue.ts`)
+
 **Purpose:** FIFO queue for managing audio playback order
 
 **Features:**
+
 - Enqueue audio segments with timestamps
 - Dequeue with automatic event emission
 - Peek at next item without removing
@@ -24,9 +26,11 @@ Implemented the complete Audio Output module for the Discord Stage AI Bot follow
 **Test Coverage:** 17 tests
 
 ### 2. BargeInDetector (`src/voice/output/barge-in.ts`)
+
 **Purpose:** Monitor user speech during bot playback to detect interruptions
 
 **Features:**
+
 - Configurable barge-in detection (on/off)
 - Minimum speech duration threshold
 - Cooldown period after bot stops speaking
@@ -37,9 +41,11 @@ Implemented the complete Audio Output module for the Discord Stage AI Bot follow
 **Test Coverage:** 15 tests
 
 ### 3. AudioOutputManager (`src/voice/output/manager.ts`)
+
 **Purpose:** Main orchestrator for audio playback across guilds
 
 **Features:**
+
 - Per-guild AudioPlayer creation and management
 - Voice connection subscription
 - Audio resource creation from PCM buffers/streams

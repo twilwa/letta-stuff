@@ -57,7 +57,9 @@ manager.stop(guildId); // Stops and clears queue
 
 // Statistics
 const stats = manager.getStats(guildId);
-console.log(`Played: ${stats.totalPlayed}, Interrupted: ${stats.interruptionCount}`);
+console.log(
+  `Played: ${stats.totalPlayed}, Interrupted: ${stats.interruptionCount}`,
+);
 console.log(`Avg TTS latency: ${stats.averageTTSLatency}ms`);
 ```
 
@@ -66,6 +68,7 @@ console.log(`Avg TTS latency: ${stats.averageTTSLatency}ms`);
 FIFO queue for audio segments. Automatically plays next item when current finishes.
 
 **Features:**
+
 - Enqueue audio segments
 - Automatic dequeue on idle
 - Clear queue
@@ -97,6 +100,7 @@ const all = queue.getAll(); // Non-destructive peek at all items
 Monitors user speech during bot playback to detect interruptions.
 
 **Configuration:**
+
 - `enabled`: Enable/disable barge-in detection
 - `minSpeechDuration`: Minimum user speech duration to trigger (ms)
 - `cooldownAfterSpeaking`: Cooldown after bot stops speaking (ms)
@@ -129,12 +133,14 @@ detector.reset(); // Clear all state
 ## Audio Format
 
 The module expects **PCM audio** in the following format:
+
 - **Sample Rate:** 48 kHz (Discord standard)
 - **Channels:** Mono or Stereo
 - **Bit Depth:** 16-bit signed integer
 - **Input Type:** Raw PCM (no Opus encoding needed)
 
 The `AudioSegment` interface accepts:
+
 - `Buffer` - Complete PCM audio data
 - `Readable` stream - For streaming TTS
 
@@ -143,15 +149,19 @@ The module automatically converts buffers to streams and creates `AudioResource`
 ## Playback Lifecycle
 
 1. **Attach to Connection**
+
    ```typescript
    manager.attachToConnection(guildId, connection);
    ```
+
    Creates player, queue, and barge-in detector for the guild.
 
 2. **Play Audio**
+
    ```typescript
    manager.play(guildId, segment);
    ```
+
    - If nothing playing → plays immediately
    - If already playing → enqueues for later
 
@@ -165,15 +175,18 @@ The module automatically converts buffers to streams and creates `AudioResource`
    - Continues until queue is empty
 
 5. **Barge-In Detection**
+
    ```typescript
    manager.onUserSpeechStart(guildId, userId);
    ```
+
    - Monitors user speech during playback
    - Stops playback immediately on interrupt
    - Clears queue
    - Emits `bargeIn` event
 
 6. **Manual Control**
+
    ```typescript
    manager.pause(guildId);
    manager.resume(guildId);
@@ -191,10 +204,10 @@ Per-guild statistics:
 
 ```typescript
 interface PlaybackStats {
-  totalPlayed: number;           // Total segments played
-  totalPlaybackTime: number;     // Total time (ms) - future
-  interruptionCount: number;     // Times interrupted by users
-  averageTTSLatency: number;     // Avg time from TTS request to playback
+  totalPlayed: number; // Total segments played
+  totalPlaybackTime: number; // Total time (ms) - future
+  interruptionCount: number; // Times interrupted by users
+  averageTTSLatency: number; // Avg time from TTS request to playback
 }
 ```
 
@@ -213,6 +226,7 @@ const segment: AudioSegment = {
 The module is designed to work with streaming or complete TTS:
 
 **Streaming TTS (chunks arrive progressively):**
+
 ```typescript
 const segment: AudioSegment = {
   data: readableStream, // Stream from TTS provider
@@ -223,6 +237,7 @@ const segment: AudioSegment = {
 ```
 
 **Complete TTS (full audio available):**
+
 ```typescript
 const segment: AudioSegment = {
   data: pcmBuffer,
@@ -250,16 +265,19 @@ audioInputManager.on("speakingStop", (userId, duration) => {
 ## Testing
 
 Comprehensive test suite with 61 tests covering:
+
 - Queue management (17 tests)
 - Barge-in detection (15 tests)
 - Manager orchestration (29 tests)
 
 Test fixtures available in `tests/fixtures/audio/`:
+
 - `generateSilentPCM(durationMs)` - Silent audio
 - `generateTonePCM(durationMs, frequency)` - Tone audio
 - `TEST_AUDIO.SHORT/MEDIUM/LONG/TONE` - Pre-generated fixtures
 
 Run tests:
+
 ```bash
 npm test -- tests/unit/voice/output/
 ```

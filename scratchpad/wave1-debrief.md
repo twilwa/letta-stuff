@@ -3,6 +3,7 @@
 ## Completed Workstreams
 
 ### Discord Core (letta-stuff-6fl)
+
 - **Status**: Foundation complete, archived
 - **Scope**: Project setup, config, Discord client, Stage utils
 - **Tests**: 13 passing
@@ -10,6 +11,7 @@
 - **Remaining**: Slash commands (can be separate issue)
 
 ### Memory System (letta-stuff-4me)
+
 - **Status**: Core complete, archived
 - **Scope**: Letta client, labels, blocks, message splitting
 - **Tests**: 29 passing
@@ -18,15 +20,15 @@
 
 ## Test Coverage Analysis
 
-| Module | Tests | Coverage | Notes |
-|--------|-------|----------|-------|
-| Config | 7 | ~95% | All validation paths |
-| Discord Client | 2 | ~70% | Intents verified |
-| Stage Utils | 4 | 100% | Detection + perms |
-| Labels | 4 | 100% | Bidirectional |
-| Splitting | 9 | ~90% | Code blocks, boundaries |
-| Blocks | 12 | ~95% | attach/detach/getOrCreate |
-| Letta Client | 4 | ~90% | Factory + singleton |
+| Module         | Tests | Coverage | Notes                     |
+| -------------- | ----- | -------- | ------------------------- |
+| Config         | 7     | ~95%     | All validation paths      |
+| Discord Client | 2     | ~70%     | Intents verified          |
+| Stage Utils    | 4     | 100%     | Detection + perms         |
+| Labels         | 4     | 100%     | Bidirectional             |
+| Splitting      | 9     | ~90%     | Code blocks, boundaries   |
+| Blocks         | 12    | ~95%     | attach/detach/getOrCreate |
+| Letta Client   | 4     | ~90%     | Factory + singleton       |
 
 **Total: 42 tests passing**
 
