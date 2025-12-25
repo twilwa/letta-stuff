@@ -15,7 +15,7 @@ export class BargeInDetector extends EventEmitter {
   private cooldownUntil: number = 0;
   private pendingBargeIns: Map<string, NodeJS.Timeout> = new Map();
 
-  constructor(config: BargeInConfig = {}) {
+  constructor(config: Partial<BargeInConfig> = {}) {
     super();
     this.config = { ...DEFAULT_BARGE_IN_CONFIG, ...config };
   }

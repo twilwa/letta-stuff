@@ -35,7 +35,6 @@ export class AudioInputManager extends EventEmitter {
   private boundSpeakingStartHandler: ((userId: string) => void) | null = null;
   private boundSpeakingEndHandler: ((userId: string) => void) | null = null;
   private boundConnectionDestroyHandler: (() => void) | null = null;
-  private ssrcUpdateInterval: NodeJS.Timeout | null = null;
 
   constructor(connection: VoiceConnection, config: AudioInputConfig = {}) {
     super();
@@ -172,14 +171,13 @@ export class AudioInputManager extends EventEmitter {
       }
 
       // Get SSRC from receiver ssrcMap - it's updated when the user starts speaking
+      // SSRCMap.get() accepts userId and returns VoiceUserData with audioSSRC
       let ssrc = 0;
-      for (const [receiverSsrc, mappedUserId] of receiver.ssrcMap.entries()) {
-        if (mappedUserId === userId) {
-          ssrc = receiverSsrc;
-          // Also update our tracker
-          this.speakerTracker.setUserIdForSsrc(ssrc, userId);
-          break;
-        }
+      const userData = receiver.ssrcMap.get(userId);
+      if (userData?.audioSSRC) {
+        ssrc = userData.audioSSRC;
+        // Also update our tracker
+        this.speakerTracker.setUserIdForSsrc(ssrc, userId);
       }
 
       this.speakerTracker.startSpeaking(userId, ssrc);
@@ -198,19 +196,18 @@ export class AudioInputManager extends EventEmitter {
     receiver.speaking.on("start", this.boundSpeakingStartHandler);
     receiver.speaking.on("end", this.boundSpeakingEndHandler);
 
-    // Also update SSRC mappings from receiver
-    const updateSsrcMappings = () => {
-      if (this.destroyed) {
-        return;
+    // Listen for SSRC mapping updates from receiver
+    receiver.ssrcMap.on("create", (data: { audioSSRC: number; userId: string }) => {
+      if (!this.destroyed && data.audioSSRC && data.userId) {
+        this.speakerTracker.setUserIdForSsrc(data.audioSSRC, data.userId);
       }
+    });
 
-      for (const [ssrc, userId] of receiver.ssrcMap.entries()) {
-        this.speakerTracker.setUserIdForSsrc(ssrc, userId);
+    receiver.ssrcMap.on("update", (_oldData: unknown, newData: { audioSSRC: number; userId: string }) => {
+      if (!this.destroyed && newData.audioSSRC && newData.userId) {
+        this.speakerTracker.setUserIdForSsrc(newData.audioSSRC, newData.userId);
       }
-    };
-
-    updateSsrcMappings();
-    this.ssrcUpdateInterval = setInterval(updateSsrcMappings, 1000);
+    });
   }
 
   /**
@@ -229,11 +226,6 @@ export class AudioInputManager extends EventEmitter {
     if (this.boundSpeakingEndHandler) {
       receiver.speaking.off("end", this.boundSpeakingEndHandler);
       this.boundSpeakingEndHandler = null;
-    }
-
-    if (this.ssrcUpdateInterval) {
-      clearInterval(this.ssrcUpdateInterval);
-      this.ssrcUpdateInterval = null;
     }
   }
 

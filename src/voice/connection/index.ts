@@ -10,6 +10,7 @@ import {
   entersState,
   VoiceConnectionDisconnectReason,
   generateDependencyReport,
+  DiscordGatewayAdapterCreator,
 } from "@discordjs/voice";
 import { ChannelType, VoiceBasedChannel, StageChannel } from "discord.js";
 
@@ -53,10 +54,12 @@ export class VoiceConnectionManager extends EventEmitter {
     }
 
     // Create new connection
+    // Cast required due to discord.js/voice type mismatch
     const connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: guildId,
-      adapterCreator: channel.guild.voiceAdapterCreator,
+      adapterCreator: channel.guild
+        .voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
     });
 
     this.connections.set(guildId, connection);
