@@ -65,6 +65,7 @@ class MockVoiceConnection extends EventEmitter {
   }
 
   destroy(): void {
+    // Emit synchronously
     this.emit("stateChange", { status: "connected" }, { status: "destroyed" });
   }
 }
@@ -323,19 +324,20 @@ describe("AudioInputManager", () => {
   });
 
   describe("SSRC mapping", () => {
-    it("should map SSRC to userId from receiver", async () => {
+    it("should track SSRC mapping when user starts speaking", async () => {
       const userId = "user123";
       const ssrc = 12345;
       
       manager.subscribeAll();
       
-      // SSRC is mapped when simulateSpeakingStart is called, and the 
-      // subscribeAll handler will pick it up from the receiver.ssrcMap
+      // When we simulate speaking start, the SSRC is already in the receiver's ssrcMap
+      // The speaking handler should look it up and set it in the tracker
       connection.receiver.simulateSpeakingStart(userId, ssrc);
       
-      // Wait for the handler to process
-      await new Promise(resolve => setTimeout(resolve, 50));
+      // Wait for the handler to process (synchronous, but let's be safe)
+      await new Promise(resolve => setTimeout(resolve, 10));
       
+      // The SSRC should now be mapped in the tracker
       const mappedUserId = manager.getUserIdForSsrc(ssrc);
       expect(mappedUserId).toBe(userId);
     });
@@ -405,15 +407,13 @@ describe("AudioInputManager", () => {
       expect(manager.isSubscribed("user3")).toBe(false);
     });
 
-    it("should clean up on connection destroy", async () => {
+    it("should clean up on connection destroy", () => {
       manager.subscribe("user123");
       
+      // Destroy emits stateChange synchronously
       connection.destroy();
       
-      // Give a small delay for the event to propagate through the event loop
-      await new Promise(resolve => setImmediate(resolve));
-      
-      // Manager should clean up
+      // Manager should have cleaned up
       expect(manager.isSubscribed("user123")).toBe(false);
     });
 
