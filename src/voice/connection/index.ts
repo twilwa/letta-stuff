@@ -69,7 +69,11 @@ export class VoiceConnectionManager extends EventEmitter {
 
     // Wait for Ready state
     try {
-      await entersState(connection, VoiceConnectionStatus.Ready, this.config.readyTimeout);
+      await entersState(
+        connection,
+        VoiceConnectionStatus.Ready,
+        this.config.readyTimeout,
+      );
       this.emit("ready", guildId);
     } catch (error) {
       // Connection failed to become ready
@@ -117,17 +121,23 @@ export class VoiceConnectionManager extends EventEmitter {
     this.connections.clear();
   }
 
-  private setupConnectionListeners(connection: VoiceConnection, guildId: string): void {
-    connection.on("stateChange", (oldState: VoiceConnectionState, newState: VoiceConnectionState) => {
-      this.handleStateChange(connection, guildId, oldState, newState);
-    });
+  private setupConnectionListeners(
+    connection: VoiceConnection,
+    guildId: string,
+  ): void {
+    connection.on(
+      "stateChange",
+      (oldState: VoiceConnectionState, newState: VoiceConnectionState) => {
+        this.handleStateChange(connection, guildId, oldState, newState);
+      },
+    );
   }
 
   private handleStateChange(
     connection: VoiceConnection,
     guildId: string,
     oldState: VoiceConnectionState,
-    newState: VoiceConnectionState
+    newState: VoiceConnectionState,
   ): void {
     const { status: oldStatus } = oldState;
     const { status: newStatus } = newState;
@@ -148,13 +158,18 @@ export class VoiceConnectionManager extends EventEmitter {
         // Max attempts reached, destroy connection
         connection.destroy();
         this.reconnectAttempts.delete(guildId);
-        this.emit("error", guildId, new Error("Max reconnection attempts reached"));
+        this.emit(
+          "error",
+          guildId,
+          new Error("Max reconnection attempts reached"),
+        );
         return;
       }
 
       // Attempt rejoin for recoverable disconnects
       if (
-        (newState as any).reason === VoiceConnectionDisconnectReason.WebSocketClose ||
+        (newState as any).reason ===
+          VoiceConnectionDisconnectReason.WebSocketClose ||
         (newState as any).reason === 4014 // Moved to a different channel or disconnected
       ) {
         this.reconnectAttempts.set(guildId, attempts + 1);

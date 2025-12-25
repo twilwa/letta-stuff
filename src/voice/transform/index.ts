@@ -17,17 +17,17 @@ export class AudioTransformPipeline {
 
   constructor(config: Partial<TransformConfig> = {}) {
     const fullConfig = { ...DEFAULT_TRANSFORM_CONFIG, ...config };
-    
+
     this.mixer = new ChannelMixer({
       inputChannels: fullConfig.inputChannels,
       outputChannels: fullConfig.outputChannels,
     });
-    
+
     this.resampler = new Resampler({
       inputSampleRate: fullConfig.inputSampleRate,
       outputSampleRate: fullConfig.outputSampleRate,
     });
-    
+
     this.stats = {
       packetsProcessed: 0,
       decodeErrors: 0,
@@ -56,9 +56,10 @@ export class AudioTransformPipeline {
     // Track stats
     const latency = Date.now() - startTime;
     this.stats.packetsProcessed++;
-    this.stats.averageLatency = 
-      (this.stats.averageLatency * (this.stats.packetsProcessed - 1) + latency) 
-      / this.stats.packetsProcessed;
+    this.stats.averageLatency =
+      (this.stats.averageLatency * (this.stats.packetsProcessed - 1) +
+        latency) /
+      this.stats.packetsProcessed;
 
     return resampled;
   }

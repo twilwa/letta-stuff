@@ -18,9 +18,7 @@ export class AudioBuffer {
       const bufferSeconds = config.bufferSeconds ?? 5;
       const frameDurationMs = config.frameDurationMs ?? 20;
       // packets = seconds / (frameDuration in seconds)
-      this.maxCapacity = Math.floor(
-        (bufferSeconds * 1000) / frameDurationMs
-      );
+      this.maxCapacity = Math.floor((bufferSeconds * 1000) / frameDurationMs);
     }
 
     this.buffer = new Array(this.maxCapacity);
@@ -104,7 +102,10 @@ export class AudioBuffer {
     }
 
     // Apply packet count limit (take most recent)
-    if (options.maxPackets !== undefined && filtered.length > options.maxPackets) {
+    if (
+      options.maxPackets !== undefined &&
+      filtered.length > options.maxPackets
+    ) {
       filtered = filtered.slice(-options.maxPackets);
     }
 

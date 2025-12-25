@@ -65,9 +65,12 @@ export class AudioOutputManager extends EventEmitter {
     connection.subscribe(player);
 
     // Set up player state change listener
-    player.on("stateChange", (oldState: AudioPlayerState, newState: AudioPlayerState) => {
-      this.handlePlayerStateChange(guildId, oldState, newState);
-    });
+    player.on(
+      "stateChange",
+      (oldState: AudioPlayerState, newState: AudioPlayerState) => {
+        this.handlePlayerStateChange(guildId, oldState, newState);
+      },
+    );
 
     // Set up queue empty listener
     queue.on("queueEmpty", () => {
@@ -279,7 +282,7 @@ export class AudioOutputManager extends EventEmitter {
   private handlePlayerStateChange(
     guildId: string,
     oldState: AudioPlayerState,
-    newState: AudioPlayerState
+    newState: AudioPlayerState,
   ): void {
     const state = this.guilds.get(guildId);
     if (!state) {

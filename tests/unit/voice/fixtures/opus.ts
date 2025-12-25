@@ -9,12 +9,12 @@ export function createOpusPacket(size: number = 960): Buffer {
   // Opus magic signature bytes followed by random data
   const header = Buffer.from([0x4f, 0x70, 0x75, 0x73]);
   const payload = Buffer.alloc(size - header.length);
-  
+
   // Fill with pseudo-random but deterministic data
   for (let i = 0; i < payload.length; i++) {
     payload[i] = (i * 37) % 256;
   }
-  
+
   return Buffer.concat([header, payload]);
 }
 
@@ -24,25 +24,27 @@ export function createOpusPacket(size: number = 960): Buffer {
  */
 export function createOpusPacketSequence(
   count: number,
-  frameDurationMs: number = 20
+  frameDurationMs: number = 20,
 ): Array<{ data: Buffer; timestamp: number }> {
   const packets: Array<{ data: Buffer; timestamp: number }> = [];
   const startTime = Date.now();
-  
+
   for (let i = 0; i < count; i++) {
     packets.push({
       data: createOpusPacket(),
       timestamp: startTime + i * frameDurationMs,
     });
   }
-  
+
   return packets;
 }
 
 /**
  * Small packet for testing edge cases
  */
-export const SMALL_OPUS_PACKET = Buffer.from([0x4f, 0x70, 0x75, 0x73, 0x01, 0x02]);
+export const SMALL_OPUS_PACKET = Buffer.from([
+  0x4f, 0x70, 0x75, 0x73, 0x01, 0x02,
+]);
 
 /**
  * Standard size packet (960 bytes ~ 20ms at 48kHz)

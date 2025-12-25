@@ -12,7 +12,10 @@ import {
 
 // Mock @discordjs/voice
 vi.mock("@discordjs/voice", async () => {
-  const actual = await vi.importActual<typeof import("@discordjs/voice")>("@discordjs/voice");
+  const actual =
+    await vi.importActual<typeof import("@discordjs/voice")>(
+      "@discordjs/voice",
+    );
   return {
     ...actual,
     createAudioPlayer: vi.fn(),
@@ -21,7 +24,10 @@ vi.mock("@discordjs/voice", async () => {
 });
 
 import { AudioOutputManager } from "../../../../src/voice/output/manager.js";
-import type { AudioSegment, BargeInConfig } from "../../../../src/voice/output/types.js";
+import type {
+  AudioSegment,
+  BargeInConfig,
+} from "../../../../src/voice/output/types.js";
 import { TEST_AUDIO } from "../../../fixtures/audio/fixtures.js";
 
 // Helper to create mock AudioPlayer
@@ -51,9 +57,13 @@ describe("AudioOutputManager", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     const voice = await import("@discordjs/voice");
-    mockCreatePlayer = voice.createAudioPlayer as unknown as ReturnType<typeof vi.fn>;
-    mockCreateResource = voice.createAudioResource as unknown as ReturnType<typeof vi.fn>;
-    
+    mockCreatePlayer = voice.createAudioPlayer as unknown as ReturnType<
+      typeof vi.fn
+    >;
+    mockCreateResource = voice.createAudioResource as unknown as ReturnType<
+      typeof vi.fn
+    >;
+
     mockCreatePlayer.mockImplementation(() => createMockPlayer());
     mockCreateResource.mockImplementation((input) => ({
       audioPlayer: null,
@@ -83,7 +93,7 @@ describe("AudioOutputManager", () => {
   describe("attachToConnection", () => {
     it("creates player and subscribes to connection", () => {
       const mockConnection = createMockConnection();
-      
+
       manager.attachToConnection("guild-123", mockConnection);
 
       expect(mockCreatePlayer).toHaveBeenCalled();
@@ -92,7 +102,7 @@ describe("AudioOutputManager", () => {
 
     it("reuses existing player for same guild", () => {
       const mockConnection = createMockConnection();
-      
+
       manager.attachToConnection("guild-123", mockConnection);
       manager.attachToConnection("guild-123", mockConnection);
 
@@ -272,18 +282,27 @@ describe("AudioOutputManager", () => {
       manager.attachToConnection("guild-123", mockConnection);
 
       // First play - should play immediately (player is Idle)
-      manager.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false, text: "First" });
+      manager.play("guild-123", {
+        data: TEST_AUDIO.SHORT,
+        streaming: false,
+        text: "First",
+      });
       expect(mockPlayer.play).toHaveBeenCalledTimes(1);
 
       // Now set to Playing so second goes to queue
       mockPlayer.state.status = AudioPlayerStatus.Playing;
-      manager.play("guild-123", { data: TEST_AUDIO.MEDIUM, streaming: false, text: "Second" });
+      manager.play("guild-123", {
+        data: TEST_AUDIO.MEDIUM,
+        streaming: false,
+        text: "Second",
+      });
 
       // Simulate player becoming idle (finished first track)
       mockPlayer.state.status = AudioPlayerStatus.Idle;
-      mockPlayer.emit("stateChange",
+      mockPlayer.emit(
+        "stateChange",
         { status: AudioPlayerStatus.Playing },
-        { status: AudioPlayerStatus.Idle }
+        { status: AudioPlayerStatus.Idle },
       );
 
       // Should have played the second item from queue
@@ -302,9 +321,10 @@ describe("AudioOutputManager", () => {
 
       manager.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false });
 
-      mockPlayer.emit("stateChange",
+      mockPlayer.emit(
+        "stateChange",
         { status: AudioPlayerStatus.Playing },
-        { status: AudioPlayerStatus.Idle }
+        { status: AudioPlayerStatus.Idle },
       );
 
       expect(finishedHandler).toHaveBeenCalledWith("guild-123");
@@ -324,9 +344,10 @@ describe("AudioOutputManager", () => {
 
       // Finish playing the only item
       mockPlayer.state.status = AudioPlayerStatus.Idle;
-      mockPlayer.emit("stateChange",
+      mockPlayer.emit(
+        "stateChange",
         { status: AudioPlayerStatus.Playing },
-        { status: AudioPlayerStatus.Idle }
+        { status: AudioPlayerStatus.Idle },
       );
 
       expect(emptyHandler).toHaveBeenCalledWith("guild-123");
@@ -343,7 +364,10 @@ describe("AudioOutputManager", () => {
       mockCreatePlayer.mockReturnValue(mockPlayer);
 
       managerWithBargeIn.attachToConnection("guild-123", mockConnection);
-      managerWithBargeIn.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false });
+      managerWithBargeIn.play("guild-123", {
+        data: TEST_AUDIO.SHORT,
+        streaming: false,
+      });
 
       // Simulate user starting to speak
       managerWithBargeIn.onUserSpeechStart("guild-123", "user-456");
@@ -363,7 +387,10 @@ describe("AudioOutputManager", () => {
       const bargeInHandler = vi.fn();
       managerWithBargeIn.on("bargeIn", bargeInHandler);
 
-      managerWithBargeIn.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false });
+      managerWithBargeIn.play("guild-123", {
+        data: TEST_AUDIO.SHORT,
+        streaming: false,
+      });
       managerWithBargeIn.onUserSpeechStart("guild-123", "user-456");
 
       expect(bargeInHandler).toHaveBeenCalledWith("guild-123", "user-456");
@@ -380,7 +407,10 @@ describe("AudioOutputManager", () => {
       mockCreatePlayer.mockReturnValue(mockPlayer);
 
       managerWithoutBargeIn.attachToConnection("guild-123", mockConnection);
-      managerWithoutBargeIn.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false });
+      managerWithoutBargeIn.play("guild-123", {
+        data: TEST_AUDIO.SHORT,
+        streaming: false,
+      });
 
       managerWithoutBargeIn.onUserSpeechStart("guild-123", "user-456");
 
@@ -399,9 +429,10 @@ describe("AudioOutputManager", () => {
       manager.attachToConnection("guild-123", mockConnection);
 
       manager.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false });
-      mockPlayer.emit("stateChange",
+      mockPlayer.emit(
+        "stateChange",
         { status: AudioPlayerStatus.Playing },
-        { status: AudioPlayerStatus.Idle }
+        { status: AudioPlayerStatus.Idle },
       );
 
       const stats = manager.getStats("guild-123");
@@ -417,7 +448,10 @@ describe("AudioOutputManager", () => {
       const mockConnection = createMockConnection();
       managerWithBargeIn.attachToConnection("guild-123", mockConnection);
 
-      managerWithBargeIn.play("guild-123", { data: TEST_AUDIO.SHORT, streaming: false });
+      managerWithBargeIn.play("guild-123", {
+        data: TEST_AUDIO.SHORT,
+        streaming: false,
+      });
       managerWithBargeIn.onUserSpeechStart("guild-123", "user-456");
 
       const stats = managerWithBargeIn.getStats("guild-123");
@@ -441,9 +475,10 @@ describe("AudioOutputManager", () => {
 
       manager.play("guild-123", segment);
 
-      mockPlayer.emit("stateChange",
+      mockPlayer.emit(
+        "stateChange",
         { status: AudioPlayerStatus.Playing },
-        { status: AudioPlayerStatus.Idle }
+        { status: AudioPlayerStatus.Idle },
       );
 
       const stats = manager.getStats("guild-123");

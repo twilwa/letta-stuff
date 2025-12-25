@@ -3,11 +3,18 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { EventEmitter } from "events";
-import { VoiceConnectionStatus, VoiceConnectionState, entersState } from "@discordjs/voice";
+import {
+  VoiceConnectionStatus,
+  VoiceConnectionState,
+  entersState,
+} from "@discordjs/voice";
 
 // Mock @discordjs/voice before imports
 vi.mock("@discordjs/voice", async () => {
-  const actual = await vi.importActual<typeof import("@discordjs/voice")>("@discordjs/voice");
+  const actual =
+    await vi.importActual<typeof import("@discordjs/voice")>(
+      "@discordjs/voice",
+    );
   return {
     ...actual,
     joinVoiceChannel: vi.fn(),
@@ -37,7 +44,10 @@ function createMockConnection(guildId: string): EventEmitter & {
 }
 
 // Helper to create mock voice channel
-function createMockChannel(type: "voice" | "stage" = "voice", guildId = "guild-123") {
+function createMockChannel(
+  type: "voice" | "stage" = "voice",
+  guildId = "guild-123",
+) {
   return {
     id: "channel-456",
     guild: { id: guildId, voiceAdapterCreator: {} },
@@ -54,7 +64,9 @@ describe("VoiceConnectionManager", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     const voice = await import("@discordjs/voice");
-    mockJoinVoiceChannel = voice.joinVoiceChannel as unknown as ReturnType<typeof vi.fn>;
+    mockJoinVoiceChannel = voice.joinVoiceChannel as unknown as ReturnType<
+      typeof vi.fn
+    >;
     mockEntersState = voice.entersState as unknown as ReturnType<typeof vi.fn>;
     manager = new VoiceConnectionManager();
   });
@@ -102,9 +114,10 @@ describe("VoiceConnectionManager", () => {
       mockJoinVoiceChannel.mockReturnValue(mockConn);
       mockEntersState.mockImplementation(async () => {
         mockConn.state.status = VoiceConnectionStatus.Ready;
-        mockConn.emit("stateChange",
+        mockConn.emit(
+          "stateChange",
           { status: VoiceConnectionStatus.Signalling },
-          { status: VoiceConnectionStatus.Ready }
+          { status: VoiceConnectionStatus.Ready },
         );
         return mockConn;
       });
@@ -197,9 +210,10 @@ describe("VoiceConnectionManager", () => {
       await manager.joinChannel(channel as any);
 
       // Simulate disconnect
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Disconnected, reason: 4014 }
+        { status: VoiceConnectionStatus.Disconnected, reason: 4014 },
       );
 
       // Fast-forward through the backoff delay
@@ -221,9 +235,10 @@ describe("VoiceConnectionManager", () => {
       await manager.joinChannel(channel as any);
 
       // Simulate destroyed state
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Destroyed }
+        { status: VoiceConnectionStatus.Destroyed },
       );
 
       expect(disconnectedHandler).toHaveBeenCalledWith("guild-123");
@@ -291,25 +306,28 @@ describe("VoiceConnectionManager", () => {
       await customManager.joinChannel(channel as any);
 
       // First disconnect - attempt 1
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Disconnected, reason: 4014 }
+        { status: VoiceConnectionStatus.Disconnected, reason: 4014 },
       );
       await vi.advanceTimersByTimeAsync(100);
       expect(mockConn.rejoin).toHaveBeenCalledTimes(1);
 
       // Second disconnect - attempt 2
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Disconnected, reason: 4014 }
+        { status: VoiceConnectionStatus.Disconnected, reason: 4014 },
       );
       await vi.advanceTimersByTimeAsync(200);
       expect(mockConn.rejoin).toHaveBeenCalledTimes(2);
 
       // Third disconnect - max reached, should emit error
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Disconnected, reason: 4014 }
+        { status: VoiceConnectionStatus.Disconnected, reason: 4014 },
       );
 
       expect(errorHandler).toHaveBeenCalledWith("guild-123", expect.any(Error));
@@ -334,23 +352,26 @@ describe("VoiceConnectionManager", () => {
       await customManager.joinChannel(channel as any);
 
       // First disconnect
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Disconnected, reason: 4014 }
+        { status: VoiceConnectionStatus.Disconnected, reason: 4014 },
       );
       await vi.advanceTimersByTimeAsync(100);
       expect(mockConn.rejoin).toHaveBeenCalledTimes(1);
 
       // Successful reconnect - resets counter
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Connecting },
-        { status: VoiceConnectionStatus.Ready }
+        { status: VoiceConnectionStatus.Ready },
       );
 
       // Second disconnect - should start fresh
-      mockConn.emit("stateChange",
+      mockConn.emit(
+        "stateChange",
         { status: VoiceConnectionStatus.Ready },
-        { status: VoiceConnectionStatus.Disconnected, reason: 4014 }
+        { status: VoiceConnectionStatus.Disconnected, reason: 4014 },
       );
       await vi.advanceTimersByTimeAsync(100); // Base delay again (not doubled)
       expect(mockConn.rejoin).toHaveBeenCalledTimes(2);

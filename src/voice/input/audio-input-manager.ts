@@ -23,7 +23,9 @@ interface UserSubscription {
 
 export class AudioInputManager extends EventEmitter {
   private connection: VoiceConnection;
-  private config: Required<Omit<AudioInputConfig, "capacity">> & { capacity?: number };
+  private config: Required<Omit<AudioInputConfig, "capacity">> & {
+    capacity?: number;
+  };
   private subscriptions = new Map<string, UserSubscription>();
   private speakerTracker: SpeakerTracker;
   private autoSubscribe: boolean = false;
@@ -51,7 +53,8 @@ export class AudioInputManager extends EventEmitter {
     });
 
     // Clean up on connection destroy
-    this.boundConnectionDestroyHandler = this.handleConnectionDestroy.bind(this);
+    this.boundConnectionDestroyHandler =
+      this.handleConnectionDestroy.bind(this);
     this.connection.on("stateChange", (oldState, newState) => {
       if (newState.status === "destroyed") {
         this.handleConnectionDestroy();

@@ -41,17 +41,17 @@ export class ChannelMixer {
     const bytesPerSample = 2; // 16-bit
     const bytesPerFrame = bytesPerSample * 2; // stereo = 2 channels
     const frameCount = Math.floor(stereo.length / bytesPerFrame);
-    
+
     const mono = Buffer.alloc(frameCount * bytesPerSample);
 
     for (let i = 0; i < frameCount; i++) {
       const left = stereo.readInt16LE(i * bytesPerFrame);
       const right = stereo.readInt16LE(i * bytesPerFrame + bytesPerSample);
-      
+
       // Average and clamp to 16-bit range
       const avg = Math.floor((left + right) / 2);
       const clamped = Math.max(-32768, Math.min(32767, avg));
-      
+
       mono.writeInt16LE(clamped, i * bytesPerSample);
     }
 

@@ -11,15 +11,15 @@ describe("Resampler", () => {
         inputSampleRate: 48000,
         outputSampleRate: 16000,
       });
-      
+
       // 48 samples at 48kHz -> 16 samples at 16kHz
       const input = Buffer.alloc(48 * 2); // 48 samples, 2 bytes each
       for (let i = 0; i < 48; i++) {
         input.writeInt16LE(i * 100, i * 2);
       }
-      
+
       const output = resampler.resample(input);
-      
+
       // Should have ~16 samples (48 / 3)
       expect(output.length).toBe(16 * 2);
     });
@@ -29,19 +29,19 @@ describe("Resampler", () => {
         inputSampleRate: 48000,
         outputSampleRate: 16000,
       });
-      
+
       // Create a simple ramp signal
       const input = Buffer.alloc(48 * 2);
       for (let i = 0; i < 48; i++) {
         input.writeInt16LE(i * 100, i * 2);
       }
-      
+
       const output = resampler.resample(input);
-      
+
       // Output should also be a ramp (approximately)
       const first = output.readInt16LE(0);
       const last = output.readInt16LE(output.length - 2);
-      
+
       expect(first).toBeLessThan(last);
     });
 
@@ -50,7 +50,7 @@ describe("Resampler", () => {
         inputSampleRate: 48000,
         outputSampleRate: 16000,
       });
-      
+
       const output = resampler.resample(Buffer.alloc(0));
       expect(output.length).toBe(0);
     });
@@ -62,14 +62,14 @@ describe("Resampler", () => {
         inputSampleRate: 16000,
         outputSampleRate: 16000,
       });
-      
+
       const input = Buffer.alloc(10 * 2);
       for (let i = 0; i < 10; i++) {
         input.writeInt16LE(i * 100, i * 2);
       }
-      
+
       const output = resampler.resample(input);
-      
+
       expect(output.equals(input)).toBe(true);
     });
   });
@@ -80,15 +80,15 @@ describe("Resampler", () => {
         inputSampleRate: 16000,
         outputSampleRate: 48000,
       });
-      
+
       // 16 samples at 16kHz -> 48 samples at 48kHz
       const input = Buffer.alloc(16 * 2);
       for (let i = 0; i < 16; i++) {
         input.writeInt16LE(i * 100, i * 2);
       }
-      
+
       const output = resampler.resample(input);
-      
+
       expect(output.length).toBe(48 * 2);
     });
   });
@@ -99,12 +99,12 @@ describe("Resampler", () => {
         inputSampleRate: 48000,
         outputSampleRate: 16000,
       });
-      
+
       const input = Buffer.alloc(2);
       input.writeInt16LE(1000, 0);
-      
+
       const output = resampler.resample(input);
-      
+
       // Single sample should produce minimal output
       expect(output.length).toBeGreaterThanOrEqual(0);
     });

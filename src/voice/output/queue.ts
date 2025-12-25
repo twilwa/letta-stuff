@@ -28,11 +28,11 @@ export class AudioQueue extends EventEmitter {
    */
   dequeue(): QueueItem | undefined {
     const item = this.queue.shift();
-    
+
     if (this.queue.length === 0 && item !== undefined) {
       this.emit("queueEmpty");
     }
-    
+
     return item;
   }
 
@@ -50,7 +50,7 @@ export class AudioQueue extends EventEmitter {
   clear(): void {
     const wasNotEmpty = this.queue.length > 0;
     this.queue = [];
-    
+
     if (wasNotEmpty) {
       this.emit("queueEmpty");
     }

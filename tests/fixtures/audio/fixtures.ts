@@ -6,7 +6,10 @@
  * @param durationMs Duration in milliseconds
  * @param sampleRate Sample rate (default 48000 for Discord)
  */
-export function generateSilentPCM(durationMs: number, sampleRate = 48000): Buffer {
+export function generateSilentPCM(
+  durationMs: number,
+  sampleRate = 48000,
+): Buffer {
   const samples = Math.floor((durationMs / 1000) * sampleRate);
   const buffer = Buffer.alloc(samples * 2); // 16-bit = 2 bytes per sample
   return buffer;
@@ -21,16 +24,16 @@ export function generateSilentPCM(durationMs: number, sampleRate = 48000): Buffe
 export function generateTonePCM(
   durationMs: number,
   frequency = 440,
-  sampleRate = 48000
+  sampleRate = 48000,
 ): Buffer {
   const samples = Math.floor((durationMs / 1000) * sampleRate);
   const buffer = Buffer.alloc(samples * 2);
-  
+
   for (let i = 0; i < samples; i++) {
     const sample = Math.sin((2 * Math.PI * frequency * i) / sampleRate) * 32767;
     buffer.writeInt16LE(Math.floor(sample), i * 2);
   }
-  
+
   return buffer;
 }
 

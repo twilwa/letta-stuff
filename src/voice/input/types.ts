@@ -33,7 +33,9 @@ export interface WindowOptions {
   maxAgeMs?: number;
 }
 
-export const DEFAULT_AUDIO_INPUT_CONFIG: Required<Omit<AudioInputConfig, "capacity">> = {
+export const DEFAULT_AUDIO_INPUT_CONFIG: Required<
+  Omit<AudioInputConfig, "capacity">
+> = {
   bufferSeconds: 5,
   frameDurationMs: 20,
 };

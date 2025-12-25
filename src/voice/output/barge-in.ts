@@ -100,7 +100,7 @@ export class BargeInDetector extends EventEmitter {
   reset(): void {
     this.playing = false;
     this.cooldownUntil = 0;
-    
+
     // Clear all pending timers
     for (const timeout of this.pendingBargeIns.values()) {
       clearTimeout(timeout);

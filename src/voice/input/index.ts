@@ -9,7 +9,12 @@ import type { AudioInputConfig, AudioPacket } from "./types.js";
 
 export { AudioBuffer } from "./audio-buffer.js";
 export { SpeakerTracker } from "./speaker-tracker.js";
-export type { AudioInputConfig, AudioInputEvents, AudioPacket, WindowOptions } from "./types.js";
+export type {
+  AudioInputConfig,
+  AudioInputEvents,
+  AudioPacket,
+  WindowOptions,
+} from "./types.js";
 
 interface UserSubscription {
   buffer: AudioBuffer;
@@ -37,15 +42,18 @@ export class AudioInputManager extends EventEmitter {
       }
     });
 
-    this.speakerTracker.on("speakingStop", (userId: string, duration: number) => {
-      if (!this.destroyed) {
-        this.emit("speakingStop", userId, duration);
-        if (this.subscribeAllMode) {
-          // Auto-unsubscribe when user stops in subscribeAll mode
-          this.unsubscribe(userId);
+    this.speakerTracker.on(
+      "speakingStop",
+      (userId: string, duration: number) => {
+        if (!this.destroyed) {
+          this.emit("speakingStop", userId, duration);
+          if (this.subscribeAllMode) {
+            // Auto-unsubscribe when user stops in subscribeAll mode
+            this.unsubscribe(userId);
+          }
         }
-      }
-    });
+      },
+    );
 
     // Listen for connection destroy
     connection.on("destroyed" as any, () => {
