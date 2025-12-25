@@ -99,32 +99,24 @@ bd list            # All open issues
 bd stats           # Project health
 ```
 
-### Wave 1 (Foundation - Parallelizable)
+### Wave 1 ✅ Complete (Archived)
 
-| Proposal               | Tasks | Focus                                 | Parallel?            |
-| ---------------------- | ----- | ------------------------------------- | -------------------- |
-| `add-discord-core`     | 31    | Discord client, Stage, slash commands | ✅                   |
-| `add-memory-system`    | 35    | Letta SDK, per-user memory blocks     | ✅                   |
-| `add-voice-connection` | 25    | @discordjs/voice lifecycle            | ✅                   |
-| `add-audio-output`     | 34    | Player, queue, barge-in               | ✅ (with connection) |
+Discord core, memory system, voice connection, audio I/O, audio transform - all implemented with 215 passing tests.
 
-### Wave 1b (Voice Modules - After Connection)
+### Wave 2 (Current - Voice AI)
 
-| Proposal              | Tasks | Focus                              | Depends On                |
-| --------------------- | ----- | ---------------------------------- | ------------------------- |
-| `add-audio-input`     | 31    | Per-user streams, speaker tracking | voice-connection          |
-| `add-audio-transform` | 37    | Opus→PCM, 48kHz→16kHz resample     | audio-input (or fixtures) |
-
-### Wave 2 (Depends on Wave 1)
-
-- **Wake Word Detection** - Porcupine integration (needs audio-transform)
-- **Voice Processing** - STT → Turn Detection → TTS (needs audio-transform)
-- **Stage Features** - Stage Instance management (needs discord-core)
+| Proposal | Tasks | Focus | Depends On |
+|----------|-------|-------|------------|
+| `add-wake-word` | 25 | Picovoice Porcupine detection | audio-transform ✅ |
+| `add-stt` | 28 | Deepgram streaming STT | audio-transform ✅ |
+| `add-tts` | 28 | Cartesia/ElevenLabs TTS | audio-output ✅ |
+| `add-mcp-integration` | 29 | MCP client, Letta tools | independent |
 
 ### Wave 3 (Integration)
 
-- **Voice Orchestration** - Relevance thresholds, turn-taking
-- **MCP Integration** - Tool servers, LangChain adapters
+| Proposal | Tasks | Focus | Depends On |
+|----------|-------|-------|------------|
+| `add-voice-orchestration` | 39 | Relevance scoring, turn-taking, LLM | wake-word, stt, tts |
 
 ## Key Patterns
 
@@ -158,6 +150,39 @@ function shouldSpeak(context, transcription): boolean {
 
   return relevance > 0.8 && floorOpen;
 }
+```
+
+## Version Control (jj-first)
+
+This repo uses jj (Jujutsu) with a colocated .git. Prefer jj over git for local work.
+
+**Bookmark pattern for proposals:**
+```bash
+# Each OpenSpec proposal gets a bookmark: beads/<proposal-id>
+jj bookmark create beads/add-wake-word -r @
+```
+
+**Common operations:**
+| Task | jj (preferred) | git (avoid) |
+|------|----------------|-------------|
+| Start work | `jj new -m "msg"` | `git checkout -b` |
+| Switch context | `jj edit <change>` | `git stash` |
+| Undo | `jj op undo` | `git reset --hard` |
+| Squash | `jj squash` | `git rebase -i` |
+| Reorder | `jj rebase -r X -d Y` | `git rebase -i` |
+| Update from main | `jj rebase -d main@origin` | `git rebase main` |
+| View stack | `jj log -r 'beads/add-wake-word::'` | `git log` |
+
+**When to use git:**
+- Submodule operations (`git submodule update`)
+- Push to remote (`jj git push` or `git push`)
+- Tools that require git explicitly
+
+**Useful revsets:**
+```bash
+jj log -r 'trunk()'              # main@origin
+jj log -r 'bookmarks(beads/*)'   # all proposal stacks
+jj diff -r '@-'                  # diff from parent
 ```
 
 ## Testing Notes
