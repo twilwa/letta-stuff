@@ -13,6 +13,13 @@ export interface BotConfig {
     baseUrl: string;
     agentId?: string;
   };
+  tts: {
+    cartesiaApiKey?: string;
+    elevenLabsApiKey?: string;
+  };
+  stt: {
+    deepgramApiKey?: string;
+  };
 }
 
 export function loadConfig(): BotConfig {
@@ -36,6 +43,13 @@ export function loadConfig(): BotConfig {
   const lettaBaseUrl = process.env.LETTA_BASE_URL || "http://localhost:8283";
   const lettaAgentId = process.env.LETTA_AGENT_ID;
 
+  // Optional TTS provider API keys
+  const cartesiaApiKey = process.env.CARTESIA_API_KEY;
+  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
+
+  // Optional STT provider API keys
+  const deepgramApiKey = process.env.DEEPGRAM_API_KEY;
+
   return {
     discord: {
       token: discordToken,
@@ -45,6 +59,13 @@ export function loadConfig(): BotConfig {
     letta: {
       baseUrl: lettaBaseUrl,
       agentId: lettaAgentId,
+    },
+    tts: {
+      cartesiaApiKey,
+      elevenLabsApiKey,
+    },
+    stt: {
+      deepgramApiKey,
     },
   };
 }
