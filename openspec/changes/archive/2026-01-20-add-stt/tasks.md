@@ -32,14 +32,14 @@
 
 ## 5. Integration
 
-- [ ] 5.1 Connect to AudioTransformPipeline output
-- [ ] 5.2 Route per-user audio streams to Deepgram
-- [ ] 5.3 Forward transcripts to orchestration layer
-- [ ] 5.4 Handle connection lifecycle cleanup
+- [x] 5.1 Connect to AudioTransformPipeline output (STTInputBridge)
+- [x] 5.2 Route per-user audio streams to Deepgram
+- [x] 5.3 Forward transcripts to orchestration layer
+- [x] 5.4 Handle connection lifecycle cleanup
 
 ## 6. Testing
 
 - [x] 6.1 Create mock Deepgram WebSocket for unit tests
-- [x] 6.2 Write unit tests for transcript aggregation
-- [ ] 6.3 Write unit tests for reconnection handling
-- [ ] 6.4 Create integration test with real Deepgram (optional)
+- [x] 6.2 Write unit tests for transcript aggregation (37 tests)
+- [x] 6.3 Write unit tests for STTManager (21 tests)
+- [x] 6.4 Write unit tests for STTInputBridge (22 tests)

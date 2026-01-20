@@ -105,18 +105,18 @@ Discord core, memory system, voice connection, audio I/O, audio transform - all 
 
 ### Wave 2 (Current - Voice AI)
 
-| Proposal | Tasks | Focus | Depends On |
-|----------|-------|-------|------------|
-| `add-wake-word` | 25 | Picovoice Porcupine detection | audio-transform ✅ |
-| `add-stt` | 28 | Deepgram streaming STT | audio-transform ✅ |
-| `add-tts` | 28 | Cartesia/ElevenLabs TTS | audio-output ✅ |
-| `add-mcp-integration` | 29 | MCP client, Letta tools | independent |
+| Proposal              | Tasks | Focus                         | Depends On         |
+| --------------------- | ----- | ----------------------------- | ------------------ |
+| `add-wake-word`       | 25    | Picovoice Porcupine detection | audio-transform ✅ |
+| `add-stt`             | 28    | Deepgram streaming STT        | audio-transform ✅ |
+| `add-tts`             | 28    | Cartesia/ElevenLabs TTS       | audio-output ✅    |
+| `add-mcp-integration` | 29    | MCP client, Letta tools       | independent        |
 
 ### Wave 3 (Integration)
 
-| Proposal | Tasks | Focus | Depends On |
-|----------|-------|-------|------------|
-| `add-voice-orchestration` | 39 | Relevance scoring, turn-taking, LLM | wake-word, stt, tts |
+| Proposal                  | Tasks | Focus                               | Depends On          |
+| ------------------------- | ----- | ----------------------------------- | ------------------- |
+| `add-voice-orchestration` | 39    | Relevance scoring, turn-taking, LLM | wake-word, stt, tts |
 
 ## Key Patterns
 
@@ -157,6 +157,7 @@ function shouldSpeak(context, transcription): boolean {
 This repo uses jj (Jujutsu) with a colocated .git. Prefer jj over git for local work.
 
 **Bookmark pattern for proposals:**
+
 ```bash
 # Each OpenSpec proposal gets a bookmark: beads/<proposal-id>
 jj bookmark create beads/add-wake-word -r @
@@ -174,11 +175,13 @@ jj bookmark create beads/add-wake-word -r @
 | View stack | `jj log -r 'beads/add-wake-word::'` | `git log` |
 
 **When to use git:**
+
 - Submodule operations (`git submodule update`)
 - Push to remote (`jj git push` or `git push`)
 - Tools that require git explicitly
 
 **Useful revsets:**
+
 ```bash
 jj log -r 'trunk()'              # main@origin
 jj log -r 'bookmarks(beads/*)'   # all proposal stacks

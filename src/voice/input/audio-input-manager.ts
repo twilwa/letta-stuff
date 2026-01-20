@@ -197,17 +197,26 @@ export class AudioInputManager extends EventEmitter {
     receiver.speaking.on("end", this.boundSpeakingEndHandler);
 
     // Listen for SSRC mapping updates from receiver
-    receiver.ssrcMap.on("create", (data: { audioSSRC: number; userId: string }) => {
-      if (!this.destroyed && data.audioSSRC && data.userId) {
-        this.speakerTracker.setUserIdForSsrc(data.audioSSRC, data.userId);
-      }
-    });
+    receiver.ssrcMap.on(
+      "create",
+      (data: { audioSSRC: number; userId: string }) => {
+        if (!this.destroyed && data.audioSSRC && data.userId) {
+          this.speakerTracker.setUserIdForSsrc(data.audioSSRC, data.userId);
+        }
+      },
+    );
 
-    receiver.ssrcMap.on("update", (_oldData: unknown, newData: { audioSSRC: number; userId: string }) => {
-      if (!this.destroyed && newData.audioSSRC && newData.userId) {
-        this.speakerTracker.setUserIdForSsrc(newData.audioSSRC, newData.userId);
-      }
-    });
+    receiver.ssrcMap.on(
+      "update",
+      (_oldData: unknown, newData: { audioSSRC: number; userId: string }) => {
+        if (!this.destroyed && newData.audioSSRC && newData.userId) {
+          this.speakerTracker.setUserIdForSsrc(
+            newData.audioSSRC,
+            newData.userId,
+          );
+        }
+      },
+    );
   }
 
   /**

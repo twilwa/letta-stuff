@@ -3,6 +3,10 @@
 
 import { loadConfig } from "./config";
 import { createClient } from "./discord/client";
+import { CommandRegistry, handleInteraction } from "./commands/registry";
+import { VoiceConnectionManager } from "./voice/connection";
+import { JoinCommand } from "./commands/join";
+import { LeaveCommand } from "./commands/leave";
 
 console.log("🚀 Starting Discord Stage AI bot...");
 
@@ -14,6 +18,14 @@ console.log("✓ Configuration loaded successfully");
 // Create Discord client
 console.log("🔧 Creating Discord client...");
 const client = createClient();
+
+// Create voice connection manager
+const voiceManager = new VoiceConnectionManager();
+
+// Create command registry
+const commands = new CommandRegistry();
+commands.register(new JoinCommand(voiceManager));
+commands.register(new LeaveCommand(voiceManager));
 
 // Handle process-level errors
 process.on("unhandledRejection", (error) => {
@@ -34,6 +46,7 @@ client.on("error", (error) => {
 const shutdown = async () => {
   console.log("\n🛑 Shutting down gracefully...");
   try {
+    voiceManager.destroy();
     if (client.isReady()) {
       await client.destroy();
       console.log("✓ Discord client disconnected");
@@ -52,6 +65,12 @@ process.on("SIGTERM", shutdown);
 client.once("ready", () => {
   console.log(`🤖 Logged in as ${client.user?.tag}!`);
   console.log("✓ Bot is ready");
+});
+
+// Handle slash command interactions
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  await handleInteraction(commands, interaction);
 });
 
 // Login to Discord

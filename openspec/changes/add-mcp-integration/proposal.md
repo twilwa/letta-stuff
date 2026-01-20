@@ -37,10 +37,10 @@ src/tools/
 interface ToolManager {
   // Get all available tools across servers
   getTools(): Promise<Tool[]>;
-  
+
   // Execute a tool by name
   execute(name: string, args: Record<string, unknown>): Promise<ToolResult>;
-  
+
   // Connect to an MCP server
   addServer(config: MCPServerConfig): Promise<void>;
 }

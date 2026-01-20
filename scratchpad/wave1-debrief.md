@@ -68,6 +68,7 @@
 ## Current State
 
 **Implemented (Wave 1 complete):**
+
 - Discord client + Stage utilities
 - Letta memory client + per-user blocks
 - VoiceConnectionManager (join/leave, reconnection, Stage speaker requests)
@@ -79,12 +80,12 @@
 
 ## Wave 2 Proposals (Validated)
 
-| Proposal | Tasks | Focus | Can Parallelize? |
-|----------|-------|-------|------------------|
-| `add-wake-word` | 25 | Picovoice Porcupine | ✅ Yes |
-| `add-stt` | 28 | Deepgram streaming | ✅ Yes |
-| `add-tts` | 28 | Cartesia + ElevenLabs fallback | ✅ Yes |
-| `add-mcp-integration` | 29 | MCP client, Letta tools | ✅ Yes |
+| Proposal              | Tasks | Focus                          | Can Parallelize? |
+| --------------------- | ----- | ------------------------------ | ---------------- |
+| `add-wake-word`       | 25    | Picovoice Porcupine            | ✅ Yes           |
+| `add-stt`             | 28    | Deepgram streaming             | ✅ Yes           |
+| `add-tts`             | 28    | Cartesia + ElevenLabs fallback | ✅ Yes           |
+| `add-mcp-integration` | 29    | MCP client, Letta tools        | ✅ Yes           |
 
 **Wave 3 (blocked on Wave 2):**
 | Proposal | Tasks | Focus | Blocked By |
@@ -122,30 +123,35 @@
 ## Implementation Notes
 
 ### Wake Word (add-wake-word)
+
 - Input: 16kHz mono PCM from AudioTransformPipeline
 - Porcupine needs 512-sample frames
 - Custom wake word via Porcupine console (type-in phrase)
 - Emit detection events with userId for orchestration
 
 ### STT (add-stt)
+
 - Deepgram WebSocket streaming
 - Input: 16kHz mono from transform pipeline
 - Emit interim + final transcripts with speaker attribution
 - Track latency (<200ms target)
 
 ### TTS (add-tts)
+
 - Cartesia primary (<100ms time-to-first-audio)
 - ElevenLabs fallback
 - Output: PCM stream → AudioOutputManager
 - Support streaming synthesis for low latency
 
 ### MCP (add-mcp-integration)
+
 - Connect to Letta MCP server (stdio or HTTP)
 - Aggregate tools from multiple servers
 - Route tool calls to correct server
 - Can develop independently of voice pipeline
 
 ### Voice Orchestration (add-voice-orchestration)
+
 - shouldSpeak() logic: wake word OR (relevance > 0.8 AND floor open)
 - Rate limiting (max responses/minute)
 - Turn budgeting (bot vs human speech ratio)
@@ -175,6 +181,7 @@ ELEVENLABS_API_KEY=         # TTS (fallback)
 3. **Final integration** voice-orchestration after 1-3 complete
 
 Each subagent should:
+
 - Use TDD per proposal tasks.md
 - Work in jj bookmark `beads/<proposal-id>`
 - Not touch unrelated modules

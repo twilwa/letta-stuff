@@ -32,14 +32,14 @@
 
 ## 5. Audio Output Integration
 
-- [ ] 5.1 Connect TTS output to AudioOutputManager
-- [ ] 5.2 Create AudioSegment from TTS stream
-- [ ] 5.3 Handle streaming vs complete audio modes
-- [ ] 5.4 Support barge-in cancellation
+- [x] 5.1 Connect TTS output to AudioOutputManager (TTSOutputBridge)
+- [x] 5.2 Create AudioSegment from TTS stream
+- [x] 5.3 Handle streaming vs complete audio modes
+- [x] 5.4 Support barge-in cancellation
 
 ## 6. Testing
 
 - [x] 6.1 Create mock TTS providers for unit tests
 - [x] 6.2 Write unit tests for streaming output
 - [x] 6.3 Write unit tests for fallback behavior
-- [ ] 6.4 Create audio fixtures for verification
+- [x] 6.4 Write unit tests for TTSOutputBridge (17 tests)

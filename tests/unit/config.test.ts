@@ -3,6 +3,9 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
+// Mock dotenv/config to prevent .env from overwriting test env vars
+vi.mock("dotenv/config", () => ({}));
+
 describe("Config Loader", () => {
   const originalEnv = process.env;
 
