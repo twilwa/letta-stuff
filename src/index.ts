@@ -7,6 +7,9 @@ import { CommandRegistry, handleInteraction } from "./commands/registry";
 import { VoiceConnectionManager } from "./voice/connection";
 import { JoinCommand } from "./commands/join";
 import { LeaveCommand } from "./commands/leave";
+import { StageStartCommand } from "./commands/stage-start";
+import { StageStopCommand } from "./commands/stage-stop";
+import { PromoteCommand } from "./commands/promote";
 
 console.log("🚀 Starting Discord Stage AI bot...");
 
@@ -26,6 +29,9 @@ const voiceManager = new VoiceConnectionManager();
 const commands = new CommandRegistry();
 commands.register(new JoinCommand(voiceManager));
 commands.register(new LeaveCommand(voiceManager));
+commands.register(new StageStartCommand());
+commands.register(new StageStopCommand());
+commands.register(new PromoteCommand());
 
 // Handle process-level errors
 process.on("unhandledRejection", (error) => {
