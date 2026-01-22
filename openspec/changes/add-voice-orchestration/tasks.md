@@ -17,22 +17,22 @@
 
 ## 3. Turn Manager
 
-- [ ] 3.1 Create TurnManager class
-- [ ] 3.2 Track current speakers
-- [ ] 3.3 Detect floor availability (isFloorOpen)
+- [x] 3.1 Create TurnManager class
+- [x] 3.2 Track current speakers
+- [x] 3.3 Detect floor availability (isFloorOpen)
 - [ ] 3.4 Implement turn budgeting (bot vs human speech ratio)
-- [ ] 3.5 Implement cool-down periods after speaking
+- [x] 3.5 Implement cool-down periods after speaking
 - [ ] 3.6 Handle barge-in events
 
 ## 4. Voice Orchestrator
 
-- [ ] 4.1 Create VoiceOrchestrator class
+- [x] 4.1 Create VoiceOrchestrator class
 - [ ] 4.2 Connect to wake word detector
-- [ ] 4.3 Connect to STT manager
-- [ ] 4.4 Connect to TTS manager
-- [ ] 4.5 Implement shouldSpeak() decision logic
-- [ ] 4.6 Route transcripts to LLM
-- [ ] 4.7 Route LLM responses to TTS
+- [x] 4.3 Connect to STT manager
+- [x] 4.4 Connect to TTS manager
+- [x] 4.5 Implement shouldSpeak() decision logic (direct address)
+- [x] 4.6 Route transcripts to LLM (Letta)
+- [x] 4.7 Route LLM responses to TTS
 - [ ] 4.8 Handle interruption gracefully
 
 ## 5. Response Generation
