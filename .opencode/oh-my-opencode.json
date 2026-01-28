@@ -1,0 +1,8 @@
+{
+  "agents": {
+    "beads-worker": {
+      "model": "z-ai-coding/glm-4.7",
+      "description": "Delegate beads ticket work to GLM-4.7 worker for implementation with verification summary"
+    }
+  }
+}

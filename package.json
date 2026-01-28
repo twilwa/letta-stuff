@@ -1,0 +1,52 @@
+{
+  "name": "letta-discord-stage-bot",
+  "version": "1.0.0",
+  "description": "Discord Stage Channel AI bot with long-term memory via Letta",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "deploy:commands": "ts-node src/commands/deploy.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilwa/letta-stuff.git"
+  },
+  "keywords": [
+    "discord",
+    "letta",
+    "ai",
+    "stage-channel",
+    "voice"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/twilwa/letta-stuff/issues"
+  },
+  "homepage": "https://github.com/twilwa/letta-stuff#readme",
+  "dependencies": {
+    "@cartesia/cartesia-js": "^2.2.9",
+    "@deepgram/sdk": "^4.11.3",
+    "@discordjs/opus": "^0.10.0",
+    "@discordjs/voice": "^0.17.0",
+    "@elevenlabs/elevenlabs-js": "^2.28.0",
+    "@letta-ai/letta-client": "^1.6.2",
+    "discord.js": "^14.17.3",
+    "dotenv": "^16.4.7",
+    "prism-media": "^1.3.5",
+    "sodium-native": "^5.0.10"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@vitest/ui": "^2.1.8",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,73 @@
+# ABOUTME: mise en place configuration for Discord Stage AI Bot
+# ABOUTME: Defines development tools, tasks, and environment settings
+
+[tools]
+node = "22"
+
+[env]
+NODE_ENV = "development"
+
+[tasks.dev]
+description = "Run in development mode with auto-reload"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build TypeScript to JavaScript"
+run = "npm run build"
+
+[tasks.test]
+description = "Run test suite"
+run = "npm test"
+
+[tasks.test-watch]
+description = "Run tests in watch mode"
+run = "npm run test:watch"
+
+[tasks.test-condensed]
+description = "Run tests with condensed output (failures only)"
+run = """
+npm test 2>&1 | awk '
+  /FAIL|Failed|Error:|AssertionError/ { print; fail=1 }
+  /Test Files.*passed/ { summary=$0 }
+  /Tests.*passed/ { summary=summary "\\n" $0 }
+  END { 
+    if (!fail) print "✅ All tests passing"
+    print summary
+  }
+'
+"""
+
+[tasks.test-quick]
+description = "Ultra-compressed test output for CI/workers"
+run = """
+npm test 2>&1 | tail -5 | grep -E "(Test Files|Tests|Duration)" || echo "⚠️ Test output parsing failed"
+"""
+
+[tasks.test-coverage]
+description = "Run tests with coverage"
+run = "npm run test:coverage"
+
+[tasks.lint]
+description = "Run linters with autofix"
+run = "trunk check --fix"
+
+[tasks.fmt]
+description = "Format code"
+run = "trunk fmt"
+
+[tasks.check]
+description = "Run all checks (lint + test)"
+depends = ["lint", "test"]
+
+[tasks.deploy-commands]
+description = "Deploy Discord slash commands"
+run = "npx ts-node src/commands/deploy.ts"
+
+[tasks.start]
+description = "Start bot in dev mode with auto-reload (requires .env)"
+run = "npm run dev"
+
+[tasks.bot]
+description = "Full dev startup: deploy commands then start bot"
+depends = ["deploy-commands"]
+run = "npm run dev"
