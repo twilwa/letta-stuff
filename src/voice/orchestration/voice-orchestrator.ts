@@ -20,11 +20,13 @@ export interface VoiceOrchestratorConfig {
   lettaClient: Letta;
   botName: string;
   cooldownMs?: number;
+  maxResponsesPerMinute?: number;
 }
 
 interface VoiceOrchestratorEvents {
   stateChange: (state: OrchestratorState) => void;
   responseGenerated: (text: string, userId: string) => void;
+  interrupted: (userId: string) => void;
   error: (error: Error) => void;
 }
 
@@ -39,12 +41,22 @@ export declare interface VoiceOrchestrator {
   ): boolean;
 }
 
+interface ConversationTurn {
+  role: "user" | "assistant";
+  content: string;
+  userId?: string;
+  timestamp: number;
+}
+
 export class VoiceOrchestrator extends EventEmitter {
   private state: OrchestratorState = "idle";
   private turnManager: TurnManager;
   private readonly config: VoiceOrchestratorConfig;
   private boundHandleTranscript: (event: TranscriptionEvent) => void;
   private boundHandlePlaybackFinished: (guildId: string) => void;
+  private boundHandleBargeIn: (guildId: string, userId: string) => void;
+  private conversationHistory: ConversationTurn[] = [];
+  private responseTimestamps: number[] = [];
 
   constructor(config: VoiceOrchestratorConfig) {
     super();
@@ -52,6 +64,7 @@ export class VoiceOrchestrator extends EventEmitter {
     this.turnManager = new TurnManager({ cooldownMs: config.cooldownMs });
     this.boundHandleTranscript = this.handleTranscript.bind(this);
     this.boundHandlePlaybackFinished = this.handlePlaybackFinished.bind(this);
+    this.boundHandleBargeIn = this.handleBargeIn.bind(this);
   }
 
   start(): void {
@@ -63,6 +76,7 @@ export class VoiceOrchestrator extends EventEmitter {
       "playbackFinished",
       this.boundHandlePlaybackFinished,
     );
+    this.config.audioOutputManager.on("bargeIn", this.boundHandleBargeIn);
   }
 
   stop(): void {
@@ -72,11 +86,20 @@ export class VoiceOrchestrator extends EventEmitter {
       "playbackFinished",
       this.boundHandlePlaybackFinished,
     );
+    this.config.audioOutputManager.off("bargeIn", this.boundHandleBargeIn);
   }
 
   destroy(): void {
     this.stop();
     this.removeAllListeners();
+  }
+
+  resetConversation(): void {
+    this.conversationHistory = [];
+  }
+
+  getConversationLength(): number {
+    return this.conversationHistory.length;
   }
 
   getState(): OrchestratorState {
@@ -122,19 +145,57 @@ export class VoiceOrchestrator extends EventEmitter {
       return;
     }
 
+    if (this.isRateLimited()) {
+      return;
+    }
+
     await this.processAndRespond(event);
+  }
+
+  private isRateLimited(): boolean {
+    if (!this.config.maxResponsesPerMinute) {
+      return false;
+    }
+
+    const oneMinuteAgo = Date.now() - 60000;
+    this.responseTimestamps = this.responseTimestamps.filter(
+      (ts) => ts > oneMinuteAgo,
+    );
+
+    return this.responseTimestamps.length >= this.config.maxResponsesPerMinute;
+  }
+
+  private recordResponse(): void {
+    this.responseTimestamps.push(Date.now());
   }
 
   private async processAndRespond(event: TranscriptionEvent): Promise<void> {
     this.setState("processing");
 
     try {
-      const response = await this.generateResponse(event.text, event.userId);
+      const cleanedText = this.cleanTranscript(event.text);
+
+      this.conversationHistory.push({
+        role: "user",
+        content: cleanedText,
+        userId: event.userId,
+        timestamp: Date.now(),
+      });
+
+      const response = await this.generateResponse(cleanedText, event.userId);
 
       if (!response) {
         this.setState("idle");
         return;
       }
+
+      this.recordResponse();
+
+      this.conversationHistory.push({
+        role: "assistant",
+        content: response,
+        timestamp: Date.now(),
+      });
 
       this.emit("responseGenerated", response, event.userId || "unknown");
 
@@ -149,15 +210,13 @@ export class VoiceOrchestrator extends EventEmitter {
     text: string,
     userId?: string,
   ): Promise<string | null> {
-    const cleanedText = this.cleanTranscript(text);
-
     const result = await this.config.lettaClient.agents.messages.create(
       this.config.agentId,
       {
         messages: [
           {
             role: "user",
-            content: cleanedText,
+            content: text,
           },
         ],
       },
@@ -211,5 +270,18 @@ export class VoiceOrchestrator extends EventEmitter {
 
     this.turnManager.botStoppedSpeaking();
     this.setState("idle");
+  }
+
+  private handleBargeIn(guildId: string, userId: string): void {
+    if (guildId !== this.config.guildId) {
+      return;
+    }
+
+    if (this.state === "speaking") {
+      this.config.audioOutputManager.stop(this.config.guildId);
+      this.turnManager.botStoppedSpeaking();
+      this.setState("idle");
+      this.emit("interrupted", userId);
+    }
   }
 }

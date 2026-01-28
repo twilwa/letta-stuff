@@ -31,6 +31,8 @@ class MockAudioOutputManager extends EventEmitter {
   pause = vi.fn();
   resume = vi.fn();
   destroy = vi.fn();
+  onUserSpeechStart = vi.fn();
+  onUserSpeechStop = vi.fn();
 }
 
 class MockLettaClient {
@@ -360,6 +362,181 @@ describe("VoiceOrchestrator", () => {
       await vi.advanceTimersByTimeAsync(100);
 
       expect(mockLetta.agents.messages.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("barge-in handling", () => {
+    it("should stop playback when barge-in detected", async () => {
+      const transcript: TranscriptionEvent = {
+        text: "TestBot, tell me a story",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+
+      orchestrator.start();
+      mockSTT.emit("finalTranscript", transcript);
+
+      await vi.advanceTimersByTimeAsync(50);
+
+      mockOutput.emit("bargeIn", testGuildId, "user-456");
+
+      expect(mockOutput.stop).toHaveBeenCalledWith(testGuildId);
+      expect(orchestrator.getState()).toBe("idle");
+    });
+
+    it("should emit interrupted event on barge-in", async () => {
+      const interruptedHandler = vi.fn();
+      orchestrator.on("interrupted", interruptedHandler);
+
+      const transcript: TranscriptionEvent = {
+        text: "TestBot, hello there",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+
+      orchestrator.start();
+      mockSTT.emit("finalTranscript", transcript);
+
+      await vi.advanceTimersByTimeAsync(50);
+
+      mockOutput.emit("bargeIn", testGuildId, "user-456");
+
+      expect(interruptedHandler).toHaveBeenCalledWith("user-456");
+    });
+
+    it("should ignore barge-in from other guilds", async () => {
+      const transcript: TranscriptionEvent = {
+        text: "TestBot, hello",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+
+      orchestrator.start();
+      mockSTT.emit("finalTranscript", transcript);
+
+      await vi.advanceTimersByTimeAsync(50);
+
+      mockOutput.emit("bargeIn", "other-guild", "user-456");
+
+      expect(mockOutput.stop).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("conversation history", () => {
+    it("should maintain conversation history across turns", async () => {
+      const transcript1: TranscriptionEvent = {
+        text: "TestBot, my name is Alice",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+
+      orchestrator.start();
+      mockSTT.emit("finalTranscript", transcript1);
+
+      await vi.advanceTimersByTimeAsync(50);
+      mockOutput.emit("playbackFinished", testGuildId);
+
+      await vi.advanceTimersByTimeAsync(2000);
+
+      const transcript2: TranscriptionEvent = {
+        text: "TestBot, what is my name?",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+
+      mockSTT.emit("finalTranscript", transcript2);
+
+      await vi.advanceTimersByTimeAsync(50);
+
+      expect(mockLetta.agents.messages.create).toHaveBeenCalledTimes(2);
+    });
+
+    it("should clear history on reset", () => {
+      orchestrator.start();
+      orchestrator.resetConversation();
+
+      expect(orchestrator.getConversationLength()).toBe(0);
+    });
+  });
+
+  describe("rate limiting", () => {
+    it("should respect max responses per minute", async () => {
+      const rateLimitedOrchestrator = new VoiceOrchestrator({
+        guildId: testGuildId,
+        agentId: testAgentId,
+        sttManager: mockSTT as any,
+        ttsManager: mockTTS as any,
+        audioOutputManager: mockOutput as any,
+        lettaClient: mockLetta as any,
+        botName: "TestBot",
+        maxResponsesPerMinute: 2,
+      });
+
+      rateLimitedOrchestrator.start();
+
+      for (let i = 0; i < 5; i++) {
+        const transcript: TranscriptionEvent = {
+          text: `TestBot, question ${i}`,
+          isFinal: true,
+          confidence: 0.95,
+          userId: "user-123",
+        };
+        mockSTT.emit("finalTranscript", transcript);
+        await vi.advanceTimersByTimeAsync(50);
+        mockOutput.emit("playbackFinished", testGuildId);
+        await vi.advanceTimersByTimeAsync(100);
+      }
+
+      expect(mockLetta.agents.messages.create).toHaveBeenCalledTimes(2);
+
+      rateLimitedOrchestrator.destroy();
+    });
+
+    it("should reset rate limit after one minute", async () => {
+      const rateLimitedOrchestrator = new VoiceOrchestrator({
+        guildId: testGuildId,
+        agentId: testAgentId,
+        sttManager: mockSTT as any,
+        ttsManager: mockTTS as any,
+        audioOutputManager: mockOutput as any,
+        lettaClient: mockLetta as any,
+        botName: "TestBot",
+        maxResponsesPerMinute: 1,
+      });
+
+      rateLimitedOrchestrator.start();
+
+      const transcript1: TranscriptionEvent = {
+        text: "TestBot, first",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+      mockSTT.emit("finalTranscript", transcript1);
+      await vi.advanceTimersByTimeAsync(50);
+      mockOutput.emit("playbackFinished", testGuildId);
+
+      vi.advanceTimersByTime(61000);
+
+      mockLetta.agents.messages.create.mockClear();
+
+      const transcript2: TranscriptionEvent = {
+        text: "TestBot, second",
+        isFinal: true,
+        confidence: 0.95,
+        userId: "user-123",
+      };
+      mockSTT.emit("finalTranscript", transcript2);
+      await vi.advanceTimersByTimeAsync(50);
+
+      expect(mockLetta.agents.messages.create).toHaveBeenCalledTimes(1);
+
+      rateLimitedOrchestrator.destroy();
     });
   });
 });
